@@ -150,7 +150,6 @@ var shop = function() {
 
 var randomNumber = function(min, max) {
   var value = Math.floor(Math.random() * (max - min + 1) + min);
-
   return value;
 };
 
@@ -174,7 +173,6 @@ var playerInfo = {
       window.alert("You don't have enough money!");
     }
   },
-
   upgradeAttack: function() {
     if (this.money >= 7) {
       window.alert("Upgrading player's attack by 6 for 7 dollars.");
@@ -184,7 +182,8 @@ var playerInfo = {
     else {
       window.alert("You don't have enough money!");
     }
-},
+  },
+};
 
 var enemyInfo = [
 {
@@ -198,7 +197,7 @@ var enemyInfo = [
 {
   name: "Robo Trumble",
   attack: randomNumber(10, 14)
-},
+}
 ];
 
 //start the game when the page loads
