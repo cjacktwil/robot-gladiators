@@ -4,36 +4,53 @@
 //      * Defeat each enemy robot
 // "LOSE" - Player robot's health is zero or less
 
-var fight = function(enemy) {
-    while (playerInfo.health > 0 && enemy.health > 0) {
-      // ask user if they'd liked to fight or run
-      var promptFight = window.prompt('Would you like FIGHT or SKIP this battle? Enter "FIGHT" or "SKIP" to choose.');
-  
-      // if user picks "skip" confirm and then stop the loop
-      if (promptFight === "skip" || promptFight === "SKIP") {
-        // confirm user wants to skip
-        var confirmSkip = window.confirm("Are you sure you'd like to quit?");
-  
-        // if yes (true), leave fight
-        if (confirmSkip) {
-          window.alert(playerInfo.name + ' has decided to skip this fight. Goodbye!');
-          // subtract money from playerInfo.money for skipping
-          playerInfo.money = Math.max(0, playerInfo.money - 10);
-          console.log("playerInfo.money", playerInfo.money)
-          break;
-        }
-      }
-  
+var fightOrSkip = function() {
+  //ask user if they's like to fight or skip using function
+  var promptFight = window.prompt('Would you like to FIGHT or SKIP this battle? Enter FIGHT or SKIP to choose.');
+//debugger; //where is the call to enter fight function? Keeps repeating fights against same enemy when skip
+
+
+  //Enter conditional recursive function call here
+  if (!promptFight) {
+   window.alert("You need to provide a valid answer! Please try again.");
+   return fightOrSkip(); 
+  }
+
+  promptFight = promptFight.toLowerCase();
+  //If user picks "skip" confirm and then stop the loop
+  if (promptFight === "skip") {
+    //confirm that user wants to skip
+    var confirmSkip = window.confirm("Are you sure you'd like to skip?");
+
+    //if yes (true), leave fight
+    if (confirmSkip) {
+      window.alert(playerInfo.name + " has decided to skip the fight. Goodbye!");
+      //subtract money from playerMoney for skipping
+      playerInfo.playerMoney = playerInfo.money - 10;
+      return true;
+    }
+  }
+return false;
+};
+
+var fight = function(enemyInfo) {
+  //repeat and execute as long as teh enemy robot is alive
+  while (playerInfo.health > 0 && enemyInfo.health > 0) {
+    // ask user if they'd like to fight or skip using fightOrSkip function
+    if (fightOrSkip()) {
+      // if true, leave fight by breaking loop
+      break;
+    }
       // remove enemy's health by subtracting the amount set in the playerInfo.attack variable
       var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
-      enemy.health = Math.max(0, enemy.health - damage);
+      enemyInfo.health = Math.max(0, enemyInfo.health - damage);
       console.log(
-        playerInfo.name + ' attacked ' + enemy.name + '. ' + enemy.name + ' now has ' + enemy.health + ' health remaining.'
+        playerInfo.name + ' attacked ' + enemyInfo.name + '. ' + enemyInfo.name + ' now has ' + enemyInfo.health + ' health remaining.'
       );
   
       // check enemy's health
-      if (enemy.health <= 0) {
-        window.alert(enemy.name + ' has died!');
+      if (enemyInfo.health <= 0) {
+        window.alert(enemyInfo.name + ' has died!');
   
         // award player money for winning
         playerInfo.money = playerInfo.money + 20;
@@ -41,14 +58,14 @@ var fight = function(enemy) {
         // leave while() loop since enemy is dead
         break;
       } else {
-        window.alert(enemy.name + ' still has ' + enemy.health + ' health left.');
+        window.alert(enemyInfo.name + ' still has ' + enemyInfo.health + ' health left.');
       }
   
       // remove players's health by subtracting the amount set in the enemy.attack variable
-      var damage = randomNumber(enemy.attack - 3, enemy.attack);
+      var damage = randomNumber(enemyInfo.attack - 3, enemyInfo.attack);
       playerInfo.health = Math.max(0, playerInfo.health - damage);
       console.log(
-        enemy.name + ' attacked ' + playerInfo.name + '. ' + playerInfo.name + ' now has ' + playerInfo.health + ' health remaining.'
+        enemyInfo.name + ' attacked ' + playerInfo.name + '. ' + playerInfo.name + ' now has ' + playerInfo.health + ' health remaining.'
       );
   
       // check player's health
@@ -105,7 +122,7 @@ var startGame = function() {
 var endGame = function() {
     //if player is still alive, player wins!
     if (playerInfo.health > 0) {
-        window.alert("Great job, you've survive the game! You now have a score of " + playerInfo.money + ".");
+        window.alert("Great job, you've survived the game! You now have a score of " + playerInfo.money + ".");
     }
     else {
         window.alert("You've lost your robot in battle.");
