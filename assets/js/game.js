@@ -33,9 +33,15 @@ var fightOrSkip = function() {
 return false;
 };
 
-var fight = function(enemyInfo) {
-  //repeat and execute as long as teh enemy robot is alive
-  while (playerInfo.health > 0 && enemyInfo.health > 0) {
+var fight = function(enemy) {
+  var isPlayerTurn = true;
+  if (Math.random() > 0.5) {
+    isPlayerTurn = false;
+  }
+   //repeat and execute as long as teh enemy robot is alive
+  while (playerInfo.health > 0 && enemy.health > 0) {
+    //debugger;
+    if (isPlayerTurn) {
     // ask user if they'd like to fight or skip using fightOrSkip function
     if (fightOrSkip()) {
       // if true, leave fight by breaking loop
@@ -43,14 +49,14 @@ var fight = function(enemyInfo) {
     }
       // remove enemy's health by subtracting the amount set in the playerInfo.attack variable
       var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
-      enemyInfo.health = Math.max(0, enemyInfo.health - damage);
+      enemy.health = Math.max(0, enemy.health - damage);
       console.log(
-        playerInfo.name + ' attacked ' + enemyInfo.name + '. ' + enemyInfo.name + ' now has ' + enemyInfo.health + ' health remaining.'
+        playerInfo.name + ' attacked ' + enemy.name + '. ' + enemy.name + ' now has ' + enemy.health + ' health remaining.'
       );
   
       // check enemy's health
-      if (enemyInfo.health <= 0) {
-        window.alert(enemyInfo.name + ' has died!');
+      if (enemy.health <= 0) {
+        window.alert(enemy.name + ' has died!');
   
         // award player money for winning
         playerInfo.money = playerInfo.money + 20;
@@ -58,14 +64,15 @@ var fight = function(enemyInfo) {
         // leave while() loop since enemy is dead
         break;
       } else {
-        window.alert(enemyInfo.name + ' still has ' + enemyInfo.health + ' health left.');
+        window.alert(enemy.name + ' still has ' + enemy.health + ' health left.');
       }
-  
+      //player gets attacked first
+    } else { 
       // remove players's health by subtracting the amount set in the enemy.attack variable
-      var damage = randomNumber(enemyInfo.attack - 3, enemyInfo.attack);
+      var damage = randomNumber(enemy.attack - 3, enemy.attack);
       playerInfo.health = Math.max(0, playerInfo.health - damage);
       console.log(
-        enemyInfo.name + ' attacked ' + playerInfo.name + '. ' + playerInfo.name + ' now has ' + playerInfo.health + ' health remaining.'
+        enemy.name + ' attacked ' + playerInfo.name + '. ' + playerInfo.name + ' now has ' + playerInfo.health + ' health remaining.'
       );
   
       // check player's health
@@ -77,19 +84,22 @@ var fight = function(enemyInfo) {
         window.alert(playerInfo.name + ' still has ' + playerInfo.health + ' health left.');
       }
     }
+  //switch turn order for next round
+  isPlayerTurn = !isPlayerTurn;
+  }
   };
 
 //function to start a new game
 var startGame = function() { 
     //reset player stats
     playerInfo.reset();
-  for(var i = 0; i < enemyInfo.length; i++) {
+  for(var i = 0; i < enemy.length; i++) {
     if (playerInfo.health > 0) {
         // let user know what round they are in, remember that arrays start at 0 so it needs to have 1 added to it
         window.alert("Welcome to Robot Gladiators! Round " + (i + 1));
     
         // pick new enemy to fight based on the index of the enemy.names array
-        var pickedEnemyObj = enemyInfo[i];
+        var pickedEnemyObj = enemy[i];
         //debugger;
     
         // reset enemy.health before starting new fight
@@ -101,7 +111,7 @@ var startGame = function() {
         // pass the pickedenemy.name variable's value into the fight function, where it will assume the value of the enemy.name parameter
         fight(pickedEnemyObj);
         //if we are not at the last enemy in the array
-        if (playerInfo.health > 0 && i < enemyInfo.length - 1) {
+        if (playerInfo.health > 0 && i < enemy.length - 1) {
             //ask if user wants to use the store before next round
             var storeConfirm = window.confirm("The fight is over, visit the store before the next round?");
            //if yes, take them to the store() function
@@ -140,29 +150,27 @@ var endGame = function() {
 }
 
 var shop = function() {
-    //ask the playe what they's like to do
-    var shopOptionPrompt = window.prompt("Would you like to REFILL your health, UPGRADE your attack, or LEAVE the store? Please enter one: 'REFILL', 'UPGRADE', or 'LEAVE' to make a choice.");
-    //use switch to carry out action
-    switch (shopOptionPrompt) {
-        case "REFILL":
-        case "refill":
-            playerInfo.refillHealth();
-            break;
-        case "UPGRADE":
-        case "upgrade":
-         playerInfo.upgradeAttack();
-            break;
-        case "LEAVE":
-        case "leave":
-            window.alert("Leaving the store.");
-            //do nothing, so function will end
-            break;
-        default: 
-        window.alert("You did not pick a valid option. Try again.");
-        //call shop() again to force player to pick a valid option
-        shop();
-        break;
-    }
+  //ask the player what they'd like to do
+  var shopOptionPrompt = window.prompt("Would you like to REFILL your health, UPGRADE your attack, or LEAVE the store? Please enter 1 for REFILL, 2 for UPGRADE, or 3 for LEAVE to make a choice.");
+  //use switch to carry out action
+  shopOptionPrompt = parseInt(shopOptionPrompt);
+  switch (shopOptionPrompt) {
+      case 1:
+        playerInfo.refillHealth();
+          break;
+      case 2:
+        playerInfo.upgradeAttack();
+          break;
+      case 3:
+        window.alert("Leaving the store.");
+          //do nothing, so function will end
+          break;
+      default: 
+      window.alert("You did not pick a valid option. Try again.");
+      //call shop() again to force player to pick a valid option
+      shop();
+      break;
+  }
 };
 
 var randomNumber = function(min, max) {
@@ -213,7 +221,7 @@ var playerInfo = {
   },
 };
 
-var enemyInfo = [
+var enemy = [
 {
   name: "Roborto",
   attack: randomNumber(10, 14)
